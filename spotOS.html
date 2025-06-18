@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>spotOS</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
+    :root {
+      --shadow-offset: 0;
+      --shadow-blur: 20px;
+      --shadow-spread: -5px;
+      --shadow-color: rgba(255, 255, 255, 0.7);
+      --tint-color: 255, 255, 255;
+      --tint-opacity: 0.4;
+      --frost-blur: 2px;
+      --noise-frequency: 0.008;
+      --distortion-strength: 77;
+      --outer-shadow-blur: 24px;
+    }
+
+        body {
+            font-family: 'SF Pro Display', sans-serif;
+            overflow: none;
+            background-image: url('https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/main.jpg');
+            background-size: cover;
+            transition: background-image 0.4s ease;
+        }
+
+
+
+        /* Adjustments for smaller screens */
+        @media screen and (max-width: 768px) {
+            body {
+                background-size: contain;
+                /* Adjust to 'contain' for smaller screens */
+                background-position: center;
+                /* Center the background image */
+                background-image: url('https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/main/main.jpg');
+
+            }
+        }
+
+        /* Adjustments for larger screens */
+        @media screen and (min-width: 1200px) {
+            body {
+                background-size: cover;
+                /* Adjust back to 'cover' for larger screens */
+                background-image: url('https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/main/main.jpg');
+
+            }
+        }
+
+        #clock {
+            font-size: 180px;
+            color: white;
+            font-family: 'SF Pro Display', sans-serif;
+            font-weight: px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #date {
+            font-size: 30px;
+            color: white;
+            font-family: 'SF Pro Display', sans-serif;
+            font-weight: ;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #library {
+            position: fixed;
+            top: 0;
+            left: 1px;
+            width: 250px;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 9;
+            outline: none;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        #popup {
+            position: fixed;
+            top: 1%;
+            left: 1%;
+            width: 250px;
+            height: 98%;
+            transform: translate(-50%, -50%);
+            border-radius: 20px;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+            z-index: 9998;
+            background: rgba(32, 32, 32, 0.30);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(13.7px);
+            -webkit-backdrop-filter: blur(13.7px);
+        }
+
+        #popup.active {
+            transform: translateX(0);
+        }
+
+        .clockdiv {
+            position: absolute;
+            top: 21.7%;
+            left: 86.9%;
+            transform: translate(-50%, -50%);
+            display: table;
+            min-width: 200px;
+            z-index: 9;
+            background-color: #f1f1f1;
+            text-align: center;
+            border: 1px solid #d3d3d3;
+            cursor: move;
+        }
+
+
+
+        .popup2 {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1A1A1A;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.2s;
+            border-radius: 20px;
+            width: 500px;
+            height: 500px;
+            border: none;
+        }
+
+        .overlay2 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+        .popup3 {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1A1A1A;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.2s;
+            border-radius: 20px;
+            width: 500px;
+            height: 500px;
+            border: none;
+            overflow: auto;
+        }
+
+        .overlay3 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+
+        h1 {
+            position: fixed;
+            top: -20px;
+            left: 20px;
+            color: white;
+            font-size: 50px;
+        }
+
+        .image-button {
+            width: 150px;
+            height: 100px;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        h2 {
+            color: white;
+        }
+
+        h3 {
+            color: gray;
+        }
+
+        .image {
+            height: 20px;
+            width: 250px;
+        }
+
+        open {
+            width: 1px;
+            height: 1px;
+        }
+
+        .image-app {
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 10px;
+        }
+
+
+        .popup4 {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1A1A1A;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.2s;
+            border-radius: 20px;
+            width: 500px;
+            height: 500px;
+            border: none;
+        }
+
+        .overlay4 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+        .popup5 {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1A1A1A;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.2s;
+            border-radius: 20px;
+            width: 500px;
+            height: 500px;
+            border: none;
+        }
+
+        .overlay5 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+        .popup6 {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1A1A1A;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.2s;
+            border-radius: 20px;
+            width: 500px;
+            height: 500px;
+            border: none;
+        }
+
+        .overlay6 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+        .popup7 {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1A1A1A;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.2s;
+            border-radius: 20px;
+            width: 500px;
+            height: 500px;
+            border: none;
+        }
+
+        .overlay7 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+        .settings {
+            position: relative;
+            top: 70px;
+            width: 500px;
+            height: 80px;
+            border-radius: 15px;
+            background: #383838;
+            border: none;
+            color: white;
+            text-size: 50px;
+
+        }
+
+        .text-inside {
+            position: absolute;
+            /* Make the text position absolute */
+            top: 40px;
+            /* Position the text vertically in the middle */
+            left: 60px;
+            /* Position the text horizontally in the middle */
+            transform: translate(-50%, -50%);
+            /* Center the text */
+            font-size: 30px;
+            font-family: 'SF Pro Display', sans-serif;
+
+        }
+
+        .close {
+            position: absolute;
+            /* Position the close button */
+            top: 25px;
+            /* Distance from top */
+            right: 20px;
+            /* Distance from right */
+            cursor: pointer;
+            /* Cursor style */
+            color: #2562FA;
+            font-size: 30px;
+        }
+
+        .close2 {
+            position: absolute;
+            /* Position the close button */
+            top: 25px;
+            /* Distance from top */
+            right: 20px;
+            /* Distance from right */
+            cursor: pointer;
+            /* Cursor style */
+            color: #2562FA;
+            font-size: 30px;
+        }
+
+        .close3 {
+            position: absolute;
+            /* Position the close button */
+            top: 25px;
+            /* Distance from top */
+            right: 20px;
+            /* Distance from right */
+            cursor: pointer;
+            /* Cursor style */
+            color: #2562FA;
+            font-size: 30px;
+        }
+
+        .erase {
+            display: inline-block;
+            padding: 10px 20px;
+            /* Adjust padding as needed */
+            background-color: transparent;
+            text-decoration: none;
+            color: #2562FA;
+            font-size: 30px;
+        }
+
+        #wetdiv {
+            position: absolute;
+            top: 75% left: 86.9% transform: translate(-50%, -50%);
+            display: table;
+            min-width: 200px;
+            z-index: 9;
+            background-color: #f1f1f1;
+            text-align: center;
+            border: 1px solid #d3d3d3;
+            cursor: move;
+        }
+
+        .ap {
+            border: none;
+            height: 220px;
+            border-radius: 20px;
+            background-color: #383838;
+            text-align: center;
+        }
+
+        .api1 {
+            position: relative;
+            border-radius: 14px;
+            height: 140px;
+            width: 210px;
+            left: -140px;
+            top: 20px;
+        }
+
+        .api2 {
+            position: absolute;
+            border-radius: 14px;
+            height: 140px;
+            width: 210px;
+            left: 280px;
+            top: 116px;
+        }
+
+        .pos {
+            border: none;
+            height: 150px;
+            border-radius: 20px;
+            background-color: #383838;
+            text-align: center;
+        }
+
+        .select {
+            border: none;
+            height: 50px;
+            border-radius: 20px;
+            background-color: #383838;
+            text-align: center;
+        }
+
+
+        .resize-wetdiv {
+            top: 75%;
+            left: 86.9%;
+            transform: translate(-50%, -50%);
+
+        }
+
+        .battery-container {
+            width: 75px;
+            height: 75px;
+            position: absolute;
+            top: 17px;
+            left: 10px;
+        }
+
+
+
+        circle {
+            fill: none;
+            stroke-width: 7;
+            stroke-linecap: round;
+        }
+
+        .bg {
+            stroke: #444;
+        }
+
+        .progress {
+            transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
+        }
+
+        .battery-text {
+            font-size: 50px;
+            color: white;
+            position: absolute;
+            left: 12px;
+            top: 110px;
+        }
+
+        .battery-device {
+            position: absolute;
+            top: 48%;
+            left: 51%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+
+
+
+
+        .batt {
+            position: absolute;
+            top: 24%;
+            left: 86.3%;
+            height: 210px;
+            transform: translate(-50%, -50%);
+            min-width: 210px;
+            z-index: 9;
+            border-radius: 28px;
+            isolation: isolate;
+            box-shadow: 0px 6px var(--outer-shadow-blur) rgba(0, 0, 0, 0.2);
+        }
+
+    .batt::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px -5px rgba(255, 255, 255, 0.7);
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .batt::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: 28px;
+      backdrop-filter: blur(var(--frost-blur));
+      filter: url(#glass-distortion);
+      -webkit-backdrop-filter: blur(var(--frost-blur));
+      -webkit-filter: url("#glass-distortion");
+    }
+
+
+        .weather {
+            position: absolute;
+            top: 76%;
+            left: 86.3%;
+            height: 210px;
+            transform: translate(-50%, -50%);
+            min-width: 210px;
+            z-index: 9;
+            border-radius: 28px;
+            isolation: isolate;
+            box-shadow: 0px 6px var(--outer-shadow-blur) rgba(0, 0, 0, 0.2);
+        }
+
+    .weather::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px -5px rgba(255, 255, 255, 0.7);
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .weather::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: 28px;
+      backdrop-filter: blur(var(--frost-blur));
+      filter: url(#glass-distortion);
+      -webkit-backdrop-filter: blur(var(--frost-blur));
+      -webkit-filter: url("#glass-distortion");
+    }
+
+
+
+        .bolt {
+            position: absolute;
+            top: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            display: none;
+            pointer-events: none;
+            overflow: hidden;
+        }
+    #controls {
+      color: gray;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 20px;
+      max-width: 280px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    #controls h2 {
+      margin: 8px 0 4px;
+      font-size: 16px;
+    }
+
+
+    #controls label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 4px 0;
+    }
+
+      #controls {
+        position: absolute;
+        top: 63.4%;
+        left: 10%;
+        width: 70%;
+        height: 50%;
+        max-width: 94%;
+        border-radius: 0;
+        background: none;
+      }
+
+
+      #controls input[type=range],
+      #controls input[type=text] {
+        width: 70%;
+
+}
+    }
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: red;
+  height: 6px;
+  border-radius: 3px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 300px;
+  height: 40px; /* overall height (not the track thickness yet) */
+  background: transparent;
+}
+
+/* Track before the thumb (Chrome, Safari) */
+input[type="range"]::-webkit-slider-runnable-track {
+  background: #b2babb;
+  height: 30px;
+  border-radius: 20px;
+}
+
+/* Thumb (Chrome, Edge, Safari) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;  /* Required! */
+  height: 32px; /* Thumb height */
+  width: 32px;  /* Thumb width */
+  background: #707b7c;
+  margin-top: -1px; /* Moves thumb down to center it on track */
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+    </style>
+</head>
+
+<body>
+
+
+
+    <br>
+    <div class="move resize-90 " id="date"></div>
+    <div class="move resize-108" id="clock"></div>
+    <div id="library"></div>
+
+    <ol>
+        <ol>
+            <ol>
+            </ol>
+
+            <div id="popup">
+                <ol>
+                    <h2>App Library</h2>
+                </ol>
+
+                <ol>
+                    <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-1.0/main/sett.jpg" alt="Popup Button" id="openBtn" class="image-app">
+                </ol>
+                <ol>
+                    <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-1.0/main/walp.jpg" alt="Popup Button" id="openBtn3" class="image-app">
+
+                </ol>
+            </div>
+
+            <div class="container">
+                <!-- Card 1 -->
+                <div class="batt">
+                    <div class="battery-container">
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute; overflow:hidden">
+    <defs>
+      <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+        <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+        <feDisplacementMap in="SourceGraphic" in2="blurred" scale="77" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+                        <svg width="75" height="75">
+                            <circle class="bg" cx="37.5" cy="37.5" r="28"></circle>
+                            <circle class="progress" cx="37.5" cy="37.5" r="28" stroke-dasharray="176" stroke-dashoffset="176"></circle>
+                            <div class="bolt" id="bolt">&#9889;</div>
+                            <div class="battery-text" id="battery-text">0%</div>
+                        </svg>
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-1.0/main/unnamed.png" alt="Center Icon" class="battery-device">
+                    </div>
+
+
+
+
+                </div>
+
+                <div class="container">
+                    <!-- Card 1 -->
+                    <div class="weather">
+                        <div style="color: white; font-size: 20px; position: absolute; top: 9%; left: 10%;" id="city-display"></div>
+                        <div id="weather-info"></div>
+                    </div>
+
+
+
+
+
+
+                    <div class="overlay2" id="overlay2"></div>
+                    <div class="popup2" id="popup2">
+                        <h1>Settings</h1>
+                        <button id="openBtn4" class="settings">
+
+                            <span class="text-inside">General</span>
+                            <br>
+                            <button style="position: relative; top: 80px; left: 1px; " id="openBtn5" class="settings">
+                                <span class="text-inside">&lrm;&lrm;&lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm;&lrm;Software Update</span>
+                                <button style="position: relative; top: 90px; left: 1px; " id="openBtn6" class="settings">
+                                    <span class="text-inside">&lrm;&lrm;&lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm;&lrm;Transfer or Reset</span>
+                                    <button style="position: relative; top: 100px; left: 1px; " id="openBtn7" class="settings">
+                                        <span class="text-inside">&lrm;&lrm;&lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm; &lrm;Appearance</span>
+
+
+
+
+
+                                    </button></button></button></button>
+                    </div>
+
+                    <div class="overlay3" id="overlay3"></div>
+                    <div class="popup3" id="popup3">
+
+                        <h1>Wallpapers</h1>
+                        <br>
+                        <br>
+                        <br>
+
+
+
+
+                        <h2>Collections</h2>
+                        &lrm; &lrm; &lrm; &lrm; &lrm;<img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/main.jpg" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/main.jpg">
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/dark.avif" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/dark.avif">
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/tah.png" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/tah.png">
+                        <h2>Abstract</h2>
+
+
+                        &lrm; &lrm; &lrm; &lrm; <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/abs1.jpg" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/abs1.jpg">
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/abs2.jpg" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/abs2.jpg">
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/abs3.png" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/abs3.png">
+                        <h2>Colors</h2>
+
+                        &lrm; &lrm; &lrm; &lrm; &lrm;<img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/color1.jpg" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/color1.jpg">
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/color2.jpg" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/refs/heads/main/color2.jpg">
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-1.0/main/bg.jpg" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-1.0/main/bg.jpg">
+                        <h2>Always on Display</h2>
+                        <h3>disable backgrounds</h3>
+                        <h3>to preserve battery life.</h3>
+
+                        <img style="position: absolute; top: 620px; left: 270px; width: 220px; height: 130px;" src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/main/dark.png" class="image-button" data-src="https://raw.githubusercontent.com/ca1ebb/spotOS-2.0/main/dark.png">
+
+                    </div>
+                </div>
+
+
+                <div class="overlay4" id="overlay4"></div>
+                <div class="popup4" id="popup4">
+
+                    <h1>General</h1>
+                    <span class="close" onclick="closePopup()">Back</span> <!-- Close button -->
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <h2>spotOS Version</h2>
+                    <h3>Scissortail 2.0</h3>
+                    <br>
+                    <br>
+                    <h2>Model Number</h2>
+                    <h3>HS1875P</h3>
+                    <br>
+                    <br>
+                    <h2>Serial Number</h2>
+                    <h3>18361937183629173</h3>
+
+
+
+                    <br>
+                </div>
+            </div>
+            <div class="overlay5" id="overlay5"></div>
+            <div class="popup5" id="popup5">
+
+                <h1>Software Update</h1>
+                <span class="close2" onclick="closePopup2()">Back</span> <!-- Close button -->
+
+                <h3 style="position: relative; top: 45%; left:25%;">Your HomeSpot is up to date</h3>
+
+            </div>
+
+
+            <div class="overlay6" id="overlay6"></div>
+            <div class="popup6" id="popup6">
+
+                <h1>Transfer or Reset</h1>
+                <span class="close3" onclick="closePopup3()">Back</span> <!-- Close button -->
+                <br>
+                <br>
+                <br>
+                <ol>
+                    <h2>&#12644;&#12644;Prepare for a new HomeSpot</h2>
+                </ol>
+
+                <ol>
+                    <h3>Erasing all content and settings will erase this HomeSpot and all data will be removed. This &#12644;&#12644;&#12644;&#12644;&#12644;&#12644;&#12644;&#12644;&#12644;action can not be undone.</h3>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <a href="https://www.example.com" class="erase">Erase all Content and Settings</a>
+                </ol>
+            </div>
+
+
+            <div class="overlay7" id="overlay7"></div>
+            <div class="popup7" id="popup7">
+
+                <h1>Appearance</h1>
+
+                <span class="close3" onclick="closePopup4()">Back</span> <!-- Close button -->
+                <br>
+                <br>
+                <br>
+                <br>
+                <div class="ap">
+                    <ol>
+                        <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-1.0/main/light.jpg" alt="Popup Button" id="changeColorButton2" class="api1">
+                        <ol>
+                            <img src="https://raw.githubusercontent.com/ca1ebb/spotOS-1.0/main/dark.jpg" alt="Popup Button" id="changeColorButton" class="api2">
+                        </ol>
+                    </ol>
+                </div>
+                <h2 style="position: absolute; left: 120px; top: 250px;">Light</h2>
+                <h2 style="position: absolute; left: 370px; top: 250px;">Dark</h2>
+<h3 style="position: absolute; top: 310px;">WIDGETS</h3>
+<br>
+<br>
+
+<div class="pos">
+ <div id="controls">
+
+    <label>Blur<input type="range" id="frost-blur" min="0" max="5" value="2" /></label>
+
+    <label>Frequency <input type="range" id="noise-frequency" min="0" max="0.05" step="0.001" value="0" /></label>
+    <label>Strength <input type="range" id="distortion-strength" min="0" max="250" value="0" /></label>
+  </div>
+</div>
+
+
+            </div>
+
+
+
+            <script>
+                function updateTime() {
+                    var now = new Date();
+                    var hours = now.getHours();
+                    var minutes = now.getMinutes();
+                    var ampm = hours >= 12 ? '' : '';
+
+                    // Convert hours from military time to 12-hour format
+                    hours = hours % 12;
+                    hours = hours ? hours : 12; // Handle midnight (0 hours)
+
+                    // Convert single digit hours/minutes to double digit format (e.g., 9 -> 09)
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+
+                    var timeString = hours + ":" + minutes + " " + ampm;
+                    document.getElementById('clock').innerHTML = timeString;
+                }
+
+                setInterval(updateTime, 1000);
+                updateTime();
+
+                function updateDate() {
+                    var now = new Date();
+                    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    var day = days[now.getDay()];
+                    var month = months[now.getMonth()];
+                    var dayNumber = now.getDate();
+
+                    var dateString = day + ", " + month + " " + dayNumber;
+                    document.getElementById('date').innerHTML = dateString;
+                }
+
+                setInterval(updateDate, 1000);
+                updateDate();
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    var verticalLine = document.getElementById('library');
+                    var popup = document.getElementById('popup');
+
+                    function togglePopup() {
+                        popup.classList.toggle('active');
+                    }
+
+                    verticalLine.addEventListener('click', togglePopup);
+
+                    var initialX = null;
+                    var threshold = 50;
+
+                    verticalLine.addEventListener('touchstart', function(event) {
+                        initialX = event.touches[0].clientX;
+                    });
+
+                    verticalLine.addEventListener('touchend', function(event) {
+                        if (initialX !== null) {
+                            var deltaX = event.changedTouches[0].clientX - initialX;
+                            if (Math.abs(deltaX) > threshold) {
+                                togglePopup();
+                            }
+                            initialX = null;
+                        }
+                    });
+
+                    document.addEventListener('click', function(event) {
+                        if (!popup.contains(event.target) && event.target !== verticalLine) {
+                            popup.classList.remove('active');
+                        }
+                    });
+
+                    verticalLine.addEventListener('click', function(event) {
+                        event.stopPropagation();
+                    });
+                });
+
+                const openBtn = document.getElementById('openBtn');
+                const popup = document.getElementById('popup2');
+                const overlay = document.getElementById('overlay2');
+                const imageButtons = document.querySelectorAll('.image-button');
+
+                openBtn.addEventListener('click', function() {
+                    popup.style.display = 'block';
+                    overlay.style.display = 'block';
+                    setTimeout(function() {
+                        popup.style.opacity = '1';
+                        overlay.style.opacity = '1';
+                    }, 10);
+                });
+
+                // For the third popup
+                const openBtn3 = document.getElementById('openBtn3');
+                const popup3 = document.getElementById('popup3');
+                const overlay3 = document.getElementById('overlay3');
+
+                openBtn3.addEventListener('click', function() {
+                    popup3.style.display = 'block';
+                    overlay3.style.display = 'block';
+                    setTimeout(function() {
+                        popup3.style.opacity = '1';
+                        overlay3.style.opacity = '1';
+                    }, 10);
+                });
+                // For the third popup
+                const openBtn4 = document.getElementById('openBtn4');
+                const popup4 = document.getElementById('popup4');
+                const overlay4 = document.getElementById('overlay4');
+
+                openBtn4.addEventListener('click', function() {
+                    popup4.style.display = 'block';
+                    overlay4.style.display = 'block';
+                    setTimeout(function() {
+                        popup4.style.opacity = '1';
+                        overlay4.style.opacity = '1';
+                    }, 10);
+                });
+                // For the third popup
+                const openBtn5 = document.getElementById('openBtn5');
+                const popup5 = document.getElementById('popup5');
+                const overlay5 = document.getElementById('overlay5');
+
+                openBtn5.addEventListener('click', function() {
+                    popup5.style.display = 'block';
+                    overlay5.style.display = 'block';
+                    setTimeout(function() {
+                        popup5.style.opacity = '1';
+                        overlay5.style.opacity = '1';
+                    }, 10);
+                });
+
+                // For the third popup
+                const openBtn6 = document.getElementById('openBtn6');
+                const popup6 = document.getElementById('popup6');
+                const overlay6 = document.getElementById('overlay6');
+
+                openBtn6.addEventListener('click', function() {
+                    popup6.style.display = 'block';
+                    overlay6.style.display = 'block';
+                    setTimeout(function() {
+                        popup6.style.opacity = '1';
+                        overlay6.style.opacity = '1';
+                    }, 10);
+                });
+
+                // For the third popup
+                const openBtn7 = document.getElementById('openBtn7');
+                const popup7 = document.getElementById('popup7');
+                const overlay7 = document.getElementById('overlay7');
+
+                openBtn7.addEventListener('click', function() {
+                    popup7.style.display = 'block';
+                    overlay7.style.display = 'block';
+                    setTimeout(function() {
+                        popup7.style.opacity = '1';
+                        overlay7.style.opacity = '1';
+                    }, 10);
+                });
+
+
+
+                overlay.addEventListener('click', function(e) {
+                    popup.style.opacity = '0';
+                    overlay.style.opacity = '0';
+                    setTimeout(function() {
+                        popup.style.display = 'none';
+                        overlay.style.display = 'none';
+                    }, 500);
+                });
+
+                overlay3.addEventListener('click', function(e) {
+                    popup3.style.opacity = '0';
+                    overlay3.style.opacity = '0';
+                    setTimeout(function() {
+                        popup3.style.display = 'none';
+                        overlay3.style.display = 'none';
+                    }, 500);
+                });
+                overlay4.addEventListener('click', function(e) {
+                    popup4.style.opacity = '0';
+                    overlay4.style.opacity = '0';
+                    setTimeout(function() {
+                        popup4.style.display = 'none';
+                        overlay4.style.display = 'none';
+                    }, 500);
+                });
+                overlay5.addEventListener('click', function(e) {
+                    popup5.style.opacity = '0';
+                    overlay5.style.opacity = '0';
+                    setTimeout(function() {
+                        popup5.style.display = 'none';
+                        overlay5.style.display = 'none';
+                    }, 500);
+                });
+
+                overlay6.addEventListener('click', function(e) {
+                    popup6.style.opacity = '0';
+                    overlay6.style.opacity = '0';
+                    setTimeout(function() {
+                        popup6.style.display = 'none';
+                        overlay6.style.display = 'none';
+                    }, 500);
+                });
+
+                overlay7.addEventListener('click', function(e) {
+                    popup7.style.opacity = '0';
+                    overlay7.style.opacity = '0';
+                    setTimeout(function() {
+                        popup7.style.display = 'none';
+                        overlay7.style.display = 'none';
+                    }, 500);
+                });
+
+
+                function openPopup() {
+                    document.getElementById("popup4").style.display = "block";
+                    document.getElementById("overlay4").style.display = "block";
+                }
+
+                // Function to close the popup
+                function closePopup() {
+                    document.getElementById("popup4").style.display = "none";
+                    document.getElementById("overlay4").style.display = "none";
+                }
+
+                // Function to prevent closing the popup when clicking on it
+                document.getElementById("popup4").onclick = function(event) {
+                    event.stopPropagation();
+
+                };
+
+
+                function openPopup() {
+                    document.getElementById("popup5").style.display = "block";
+                    document.getElementById("overlay5").style.display = "block";
+                }
+
+                // Function to close the popup
+                function closePopup2() {
+                    document.getElementById("popup5").style.display = "none";
+                    document.getElementById("overlay5").style.display = "none";
+                }
+
+                // Function to prevent closing the popup when clicking on it
+                document.getElementById("popup5").onclick = function(event) {
+                    event.stopPropagation();
+                };
+
+
+
+                function openPopup() {
+                    document.getElementById("popup6").style.display = "block";
+                    document.getElementById("overlay6").style.display = "block";
+                }
+
+                // Function to close the popup
+                function closePopup3() {
+                    document.getElementById("popup6").style.display = "none";
+                    document.getElementById("overlay6").style.display = "none";
+                }
+
+                // Function to prevent closing the popup when clicking on it
+                document.getElementById("popup6").onclick = function(event) {
+                    event.stopPropagation();
+                };
+
+                // Function to close the popup
+                function closePopup4() {
+                    document.getElementById("popup7").style.display = "none";
+                    document.getElementById("overlay7").style.display = "none";
+                }
+
+                // Function to prevent closing the popup when clicking on it
+                document.getElementById("popup7").onclick = function(event) {
+                    event.stopPropagation();
+                };
+
+
+
+
+                imageButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        const imageUrl = button.getAttribute('data-src');
+                        document.body.style.backgroundImage = `url(${imageUrl})`;
+                    });
+                });
+
+                const progress = document.querySelector('.progress');
+                const batteryText = document.getElementById('battery-text');
+                const bolt = document.getElementById('bolt');
+                const radius = 32;
+                const circumference = 2 * Math.PI * radius;
+
+                navigator.getBattery().then(function(battery) {
+                    function updateBatteryStatus() {
+                        const level = Math.floor(battery.level * 100);
+                        const offset = circumference - (level / 100) * circumference;
+                        progress.style.strokeDashoffset = offset;
+                        batteryText.textContent = `${level}%`;
+
+                        let strokeColor;
+
+                        if (level <= 10) {
+                            strokeColor = 'red';
+                        } else if (level <= 20) {
+                            strokeColor = 'yellow';
+                        } else if (battery.charging) {
+                            strokeColor = 'limegreen';
+                        } else {
+                            strokeColor = 'white';
+                        }
+
+                        progress.style.stroke = strokeColor;
+
+                        if (battery.charging && level <= 100) {
+                            bolt.style.display = 'block';
+                            bolt.style.color = strokeColor;
+                        } else {
+                            bolt.style.display = 'none';
+                        }
+                    }
+
+                    progress.style.strokeDasharray = circumference;
+                    updateBatteryStatus();
+
+                    battery.addEventListener('levelchange', updateBatteryStatus);
+                    battery.addEventListener('chargingchange', updateBatteryStatus);
+                });
+
+
+                const changeColorButton = document.getElementById('changeColorButton'); // Changed the variable name to changeColorButton
+                changeColorButton.addEventListener('click', function() {
+                    // Change the color of all popups to blue
+                    const popups = document.querySelectorAll('.popup, .popup2, .popup3, .popup4, .popup5, .popup6, .popup7');
+                    popups.forEach(function(popup) {
+                        popup.style.backgroundColor = '#1A1A1A';
+
+                        // Change the color of h1 and h2 inside the popup to a different color
+                        const h1Elements = popup.querySelectorAll('h1');
+                        h1Elements.forEach(function(h1) {
+                            h1.style.color = 'white'; // Change this to any color you want for h1
+                        });
+
+                        const h2Elements = popup.querySelectorAll('h2');
+                        h2Elements.forEach(function(h2) {
+                            h2.style.color = 'white'; // Change this to any color you want for h2
+                        });
+                    });
+
+                    // Change the color of text inside .settings to a different color
+                    const settingsPopups = document.querySelectorAll('.settings'); // Select all elements with .settings class
+                    settingsPopups.forEach(function(settingsPopup) {
+                        settingsPopup.style.color = 'white'; // Change this to any color you want for text inside .settings
+                        settingsPopup.style.backgroundColor = '#383838'; // Change this to any color you want for .settings background
+                    });
+
+                    // Change the color of text inside .pos to a different color
+                    const posDivs = document.querySelectorAll('.pos'); // Select all elements with .pos class
+                    posDivs.forEach(function(posDiv) {
+                        posDiv.style.color = 'white'; // Change this to any color you want for text inside .pos
+                        posDiv.style.backgroundColor = '#383838'; // Change this to any color you want for .pos background
+                    });
+
+
+                    // Change the color of text inside .ap to a different color
+                    const apDivs = document.querySelectorAll('.ap'); // Select all elements with .ap class
+                    apDivs.forEach(function(apDiv) {
+                        apDiv.style.color = 'white'; // Change this to any color you want for text inside .ap
+                        apDiv.style.backgroundColor = '#383838'; // Change this to any color you want for .ap background
+                    });
+                });
+
+
+
+
+
+
+                const changeColorButton2 = document.getElementById('changeColorButton2'); // Changed the variable name to changeColorButton2
+                changeColorButton2.addEventListener('click', function() {
+                    // Change the color of all popups to red
+                    const popups = document.querySelectorAll('.popup, .popup2, .popup3, .popup4, .popup5, .popup6, .popup7');
+                    popups.forEach(function(popup) {
+                        popup.style.backgroundColor = '#F1F1F1';
+
+                        // Change the color of h1 and h2 inside the popup to a different color
+                        const h1Elements = popup.querySelectorAll('h1');
+                        h1Elements.forEach(function(h1) {
+                            h1.style.color = 'black'; // Change this to any color you want for h1
+                        });
+
+                        const h2Elements = popup.querySelectorAll('h2');
+                        h2Elements.forEach(function(h2) {
+                            h2.style.color = 'black'; // Change this to any color you want for h2
+                        });
+                    });
+
+                    // Change the color of text inside .settings to a different color
+                    const settingsPopups = document.querySelectorAll('.settings'); // Select all elements with .settings class
+                    settingsPopups.forEach(function(settingsPopup) {
+                        settingsPopup.style.color = 'black'; // Change this to any color you want for text inside .settings
+                        settingsPopup.style.backgroundColor = '#D4D4D4'; // Change this to any color you want for .settings background
+                    });
+
+                    // Change the color of text inside .pos to a different color
+                    const posDivs = document.querySelectorAll('.pos'); // Select all elements with .pos class
+                    posDivs.forEach(function(posDiv) {
+                        posDiv.style.color = 'black'; // Change this to any color you want for text inside .pos
+                        posDiv.style.backgroundColor = '#D4D4D4'; // Change this to any color you want for .pos background
+                    });
+
+                    // Change the color of text inside .ap to a different color
+                    const apDivs = document.querySelectorAll('.ap'); // Select all elements with .ap class
+                    apDivs.forEach(function(apDiv) {
+                        apDiv.style.color = 'black'; // Change this to any color you want for text inside .ap
+                        apDiv.style.backgroundColor = '#D4D4D4'; // Change this to any color you want for .ap background
+                    });
+                });
+
+
+
+
+                function updateCityName() {
+                    // Fetch the user's location using ipinfo.io with your access token
+                    fetch('https://ipinfo.io/json?token=287532b89b47e5')
+                        .then(response => response.json())
+                        .then(data => {
+                            // Extract the city name from the response
+                            const city = data.city;
+
+                            // Display the city name on the page
+                            document.getElementById('city-display').innerText = city;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching location:', error);
+                        });
+                }
+
+                // Call updateCityName function initially
+                updateCityName();
+
+                // Function to get user's location based on IP address
+                function getUserLocation() {
+                    const accessToken = '287532b89b47e5';
+                    return fetch('https://ipinfo.io/json', {
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => data.city);
+
+                }
+
+                // Replace 'YOUR_API_KEY' with your actual API key
+                const apiKey = '270ed85119d546c0a9872218242303';
+
+                function updateWeather() {
+                    getUserLocation()
+                        .then(city => {
+                            // Fetch weather data based on user's location
+                            fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=1&units=imperial`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const weatherInfo = document.getElementById('weather-info');
+                                    const {
+                                        temp_f,
+                                        condition,
+                                        humidity
+                                    } = data.current;
+                                    const {
+                                        maxtemp_f,
+                                        mintemp_f
+                                    } = data.forecast.forecastday[0].day;
+                                    const roundedTemp = Math.round(temp_f);
+                                    const roundedMaxTemp = Math.round(maxtemp_f);
+                                    const roundedMinTemp = Math.round(mintemp_f);
+                                    let conditionText = condition.text;
+
+                                    // Change condition text if it's "moderate or heavy rain with thunder"
+                                    if (conditionText === "Moderate or heavy rain with thunder") {
+                                        conditionText = "Thunderstorm ";
+                                    }
+                                    if (conditionText === "Overcast") {
+                                        conditionText = "Cloudy";
+                                    }
+                                    if (conditionText === "Moderate or heavy rain showers") {
+                                        conditionText = "Rain";
+                                    }
+                                    if (conditionText === "Light snow showers") {
+                                        conditionText = "Snow";
+                                    }
+                                    if (conditionText === "Moderate or heavy snow showers") {
+                                        conditionText = "Snow";
+                                    }
+                                    if (conditionText === "Moderate or heavy rain") {
+                                        conditionText = "Heavy Rain ";
+                                    }
+                                    if (conditionText === "Moderate or heavy snow") {
+                                        conditionText = "Heavy Snow";
+                                    }
+                                    if (conditionText === "Moderate or heavy drizzle") {
+                                        conditionText = "Drizzle";
+                                    }
+                                    if (conditionText === "Ice pellets") {
+                                        conditionText = "Sleet";
+                                    }
+                                    if (conditionText === "Moderate or heavy sleet") {
+                                        conditionText = "Heavy Sleet";
+                                    }
+                                    if (conditionText === "Thunderstorm with light rain showers") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Thunderstorm with moderate or heavy rain showers") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Thunderstorm with light rain") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Thunderstorm with moderate or heavy rain") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Thunderstorm with light snow showers") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Thunderstorm with moderate or heavy snow showers") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Thunderstorm with light snow") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Thunderstorm with moderate or heavy snow") {
+                                        conditionText = "Thunderstorm";
+                                    }
+                                    if (conditionText === "Patchy light rain with thunder") {
+                                        conditionText = "Rain";
+                                    }
+                                    if (conditionText === "Patchy moderate or heavy rain with thunder") {
+                                        conditionText = "Rain";
+                                    }
+                                    if (conditionText === "Patchy light snow with thunder") {
+                                        conditionText = "Snow";
+                                    }
+                                    if (conditionText === "Patchy moderate or heavy snow with thunder") {
+                                        conditionText = "Snow";
+                                    }
+                                    if (conditionText === "Freezing drizzle") {
+                                        conditionText = "Sleet";
+                                    }
+                                    if (conditionText === "Heavy freezing drizzle") {
+                                        conditionText = "Heavy Sleet";
+                                    }
+                                    if (conditionText === "Patchy light drizzle") {
+                                        conditionText = "Light Sleet";
+                                    }
+                                    if (conditionText === "Patchy moderate or heavy drizzle") {
+                                        conditionText = "Sleet";
+                                    }
+
+
+                                    // Limit condition text to 14 characters including spaces
+                                    if (conditionText.length > 14) {
+                                        conditionText = conditionText.substring(0, 14);
+                                    }
+
+                                    weatherInfo.innerHTML = `
+                        <p style="color: white; position: absolute; font-size: 50px; top: -5%; left: 11%;">${roundedTemp}&deg;
+                        <p style="color: white; position: absolute; font-size: 15px; top: 77%; left: 13.3%;"> H: ${roundedMaxTemp}&deg;
+                        <p style="color: white; position: absolute; font-size: 15px; top: 77%; left: 40%;">L: ${roundedMinTemp}&deg;
+                        <p style="color: white; position: absolute; font-size: 20px; top: 60%; left: 13.3%;">${conditionText}
+                    `;
+                                })
+
+                                .catch(error => {
+                                    console.error('Error fetching weather data:', error);
+                                });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching user location:', error);
+                        });
+                }
+
+                // Initial weather update
+                updateWeather();
+
+                setInterval(updateWeather, 600000);
+                var isMoved = false;
+
+                function moveAndResize() {
+                    var resize108 = document.querySelector('.resize-108'); // Select the element with class 'resize-108'
+                    var resize90 = document.querySelector('.resize-90'); // Select the element with class 'resize-90'
+                    var resizeOther = document.querySelector('.resize-other'); // Select the element with class 'resize-other'
+
+                    if (!isMoved) {
+                        resize108.classList.add('moved-108'); // Add 'moved-108' class to move and resize element
+                        resize90.classList.add('moved-90'); // Add 'moved-90' class to move and resize element
+                        resizeOther.classList.add('moved-other'); // Add 'moved-other' class to move and resize element
+                    } else {
+                        resize108.classList.remove('moved-108'); // Remove 'moved-108' class to reset position and size
+                        resize90.classList.remove('moved-90'); // Remove 'moved-90' class to reset position and size
+                        resizeOther.classList.remove('moved-other'); // Remove 'moved-other' class to reset position and size
+                    }
+
+                    isMoved = !isMoved; // Toggle isMoved value
+                }
+
+                function reset() {
+                    var resize108 = document.querySelector('.resize-108'); // Select the element with class 'resize-108'
+                    var resize90 = document.querySelector('.resize-90'); // Select the element with class 'resize-90'
+                    var resizeOther = document.querySelector('.resize-other'); // Select the element with class 'resize-other'
+
+                    resize108.classList.remove('moved-108'); // Remove 'moved-108' class to reset position and size
+                    resize90.classList.remove('moved-90'); // Remove 'moved-90' class to reset position and size
+                    resizeOther.classList.remove('moved-other'); // Remove 'moved-other' class to reset position and size
+
+                    isMoved = false; // Reset isMoved value
+                }
+
+
+                (function() {
+                    const root = document.documentElement;
+
+                    function setVar(name, val) {
+                        root.style.setProperty(name, val);
+                    }
+
+                    function updateSVG() {
+                        const freq = parseFloat(document.getElementById('noise-frequency').value);
+                        const scale = document.getElementById('distortion-strength').value;
+                        document.querySelector('feTurbulence').setAttribute('baseFrequency', `${freq} ${freq}`);
+                        document.querySelector('feDisplacementMap').setAttribute('scale', scale);
+                    }
+
+                    const controls = {
+                        'shadow-color': ['--shadow-color', v => v],
+                        'shadow-blur': ['--shadow-blur', v => v + 'px'],
+                        'shadow-spread': ['--shadow-spread', v => v + 'px'],
+                        'tint-color': ['--tint-color', v => v.match(/\w\w/g).map(h => parseInt(h, 16)).join(',')],
+                        'tint-opacity': ['--tint-opacity', v => v / 100],
+                        'frost-blur': ['--frost-blur', v => v + 'px']
+                    };
+
+                    function updateAll() {
+                        Object.entries(controls).forEach(([id, [cssVar, fn]]) => {
+                            const el = document.getElementById(id);
+                            if (el) setVar(cssVar, fn(el.value));
+                        });
+                        updateSVG();
+                    }
+
+                    document.querySelectorAll('#controls input').forEach(i =>
+                        i.addEventListener('input', updateAll)
+                    );
+                    updateAll();
+                })();
+            </script>
+        </ol>
+    </ol>
+</body>
+
+</html>
